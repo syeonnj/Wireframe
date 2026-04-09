@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>네이버페이 금융 홈</title>
+<style>
+:root {
+  --color-white: #FFFFFF;
+  --color-gray-100: #F6F8FA;
+  --color-gray-150: #F3F5F7;
+  --color-gray-200: #EDEFF2;
+  --color-gray-250: #DCDEE0;
+  --color-gray-300: #C8CACC;
+  --color-gray-500: #AAAAAC;
+  --color-gray-600: #929294;
+  --color-gray-700: #767678;
+  --color-gray-800: #404048;
+  --color-gray-900: #1E1E23;
+  --color-black: #000000;
+  --color-green-100: #EEFFF2;
+  --color-green-200: #DEFAE4;
+  --color-green-400: #00CD60;
+  --color-green-500: #09AB49;
+  --color-blue-100: #EFF8FF;
+  --color-blue-200: #DEEEFF;
+  --color-blue-500: #007EFF;
+  --color-red-100: #FFF3F4;
+  --color-red-500: #F73631;
+  --color-teal-100: #E8FFFC;
+  --color-teal-500: #00A693;
+  --color-orange-100: #FFF8F0;
+  --color-orange-500: #FF8A00;
+  --color-purple-100: #FEF5FF;
+  --color-purple-500: #E14BF4;
+  --color-npay-green: #00DE5A;
+  --color-naver-green: #03C75A;
+  --shadow-small-5: 0 2px 4px rgba(0,0,0,0.05);
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --font-ko: "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+  --font-en: "SF Pro Text", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family: var(--font-ko);
+  --ls-tight: -0.3px;
+  --ls-normal: -0.5px;
+  --ls-wide: -0.8px;
+  --home-page-width: 393px;
+  --home-header-height: 56px;
+  --home-tab-height: 40px;
+  --home-statusbar-height: 44px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-family);
+  background: #E8E8E8;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+img, svg { display: block; }
+
+/* ─── Phone Frame ─── */
+.phone-frame {
+  width: var(--home-page-width);
+  min-height: 100vh;
+  background: var(--color-white);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ─── Status Bar ─── */
+.status-bar {
+  height: var(--home-statusbar-height);
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px 0;
+  font: 600 15px/1 var(--font-en);
+  color: var(--color-gray-900);
+}
+.status-bar__icons { display: flex; gap: 5px; align-items: center; }
+.status-bar__icons svg { width: 16px; height: 16px; fill: var(--color-gray-900); }
+
+/* ─── Header ─── */
+.header {
+  display: flex;
+  align-items: center;
+  height: var(--home-header-height);
+  padding: 0 20px;
+  background: var(--color-white);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header__logo { height: 20px; width: auto; }
+.header__service {
+  font: 700 16px/1 var(--font-family);
+  color: var(--color-gray-900);
+  margin-left: 4px;
+  letter-spacing: var(--ls-tight);
+}
+.header__spacer { flex: 1; }
+.header__actions { display: flex; gap: 8px; align-items: center; }
+.header__actions .icon-btn { width: 24px; height: 24px; cursor: pointer; }
+.header__actions .icon-btn img { width: 24px; height: 24px; }
+
+/* ─── Tab ─── */
+.line-tab {
+  display: flex;
+  height: var(--home-tab-height);
+  background: var(--color-white);
+  position: sticky;
+  top: var(--home-header-height);
+  z-index: 90;
+  border-bottom: 1px solid var(--color-gray-200);
+  padding: 0 4px;
+}
+.line-tab__item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 500 15px/1 var(--font-family);
+  color: var(--color-gray-500);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  letter-spacing: var(--ls-tight);
+  white-space: nowrap;
+}
+.line-tab__item--active {
+  font-weight: 700;
+  color: var(--color-gray-900);
+  border-bottom-color: var(--color-gray-900);
+}
+
+/* ─── Content ─── */
+.content { background: var(--color-white); }
+.content-section { padding: 24px 20px; }
+.content-section + .content-section { border-top: 8px solid var(--color-gray-100); }
+
+/* ─── Shortcut Grid ─── */
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px 0;
+  padding: 16px 20px 20px;
+}
+.shortcut-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.shortcut-item__icon {
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+}
+.shortcut-item__icon img { width: 44px; height: 44px; }
+.shortcut-item__label {
+  font: 400 11px/1.3 var(--font-family);
+  color: var(--color-gray-800);
+  text-align: center;
+  letter-spacing: var(--ls-tight);
+}
+
+/* ─── Section Title ─── */
+.section-title-area { margin-bottom: 16px; }
+.section-title {
+  font: 700 18px/1.4 var(--font-family);
+  color: var(--color-gray-900);
+  letter-spacing: var(--ls-normal);
+}
+.section-subtitle {
+  font: 400 13px/1.4 var(--font-family);
+  color: var(--color-gray-600);
+  margin-top: 4px;
+  letter-spacing: var(--ls-tight);
+}
+
+/* ─── Insurance Ranking ─── */
+.insurance-list { display: flex; flex-direction: column; gap: 12px; }
+.insurance-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.insurance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-green-100);
+  border: 1px solid var(--color-green-200);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font: 700 14px/1 var(--font-family);
+  color: var(--color-green-500);
+  white-space: nowrap;
+}
+.insurance-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-green-400); }
+.insurance-amounts {
+  font: 400 13px/1 var(--font-family);
+  color: var(--color-gray-700);
+  letter-spacing: var(--ls-tight);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.insurance-amounts .old { text-decoration: line-through; color: var(--color-gray-500); }
+.insurance-amounts .arrow { color: var(--color-gray-500); }
+.insurance-amounts .new { font-weight: 700; color: var(--color-gray-900); }
+
+/* CTA button */
+.cta-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  border: none;
+  border-radius: 8px;
+  font: 700 14px/1 var(--font-family);
+  text-align: center;
+  cursor: pointer;
+  letter-spacing: var(--ls-tight);
+}
+.cta-btn--green {
+  background: var(--color-green-100);
+  color: var(--color-green-500);
+}
+.cta-btn--blue {
+  background: var(--color-blue-100);
+  color: var(--color-blue-500);
+}
+.cta-btn--red {
+  background: var(--color-red-100);
+  color: var(--color-red-500);
+}
+
+/* ─── Rate Chart Section ─── */
+.rate-section { position: relative; }
+.rate-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.rate-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font: 500 13px/1 var(--font-family);
+  color: var(--color-gray-600);
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
+  cursor: pointer;
+}
+.rate-tab--active {
+  background: var(--color-gray-900);
+  color: var(--color-white);
+  border-color: var(--color-gray-900);
+}
+.rate-chart {
+  height: 140px;
+  background: linear-gradient(180deg, var(--color-green-100) 0%, var(--color-white) 100%);
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 12px 20px;
+  overflow: hidden;
+}
+.rate-chart__bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.rate-chart__bar {
+  width: 28px;
+  background: var(--color-gray-200);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s;
+}
+.rate-chart__bar--highlight {
+  background: linear-gradient(180deg, var(--color-naver-green) 0%, #7CF4A5 100%);
+}
+.rate-chart__label {
+  font: 400 11px/1 var(--font-family);
+  color: var(--color-gray-600);
+}
+.rate-chart__value {
+  position: absolute;
+  top: 12px; right: 16px;
+  font: 700 24px/1 var(--font-en);
+  color: var(--color-naver-green);
+  letter-spacing: -0.5px;
+}
+.rate-chart__value small {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ─── Card Benefits ─── */
+.card-logos {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.card-logos::-webkit-scrollbar { display: none; }
+.card-logo-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-white);
+  font: 500 12px/1 var(--font-family);
+  color: var(--color-gray-800);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.card-logo-chip__dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+}
+.card-benefit-list { display: flex; flex-direction: column; gap: 0; }
+.card-benefit-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+.card-benefit-item:last-child { border-bottom: none; }
+.card-benefit-item__logo {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--color-gray-100);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font: 700 10px/1 var(--font-family);
+  color: var(--color-gray-700);
+  overflow: hidden;
+}
+.card-benefit-item__name {
+  flex: 1;
+  margin-left: 10px;
+  font: 500 14px/1 var(--font-family);
+  color: var(--color-gray-900);
+  letter-spacing: var(--ls-tight);
+}
+.card-benefit-item__desc {
+  font: 400 13px/1 var(--font-family);
+  color: var(--color-gray-600);
+  letter-spacing: var(--ls-tight);
+}
+
+/* ─── Promo Card ─── */
+.promo-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: var(--color-gray-100);
+  border-radius: 12px;
+  gap: 12px;
+}
+.promo-card + .promo-card { margin-top: 10px; }
+.promo-card__icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--color-white);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.promo-card__icon img { width: 28px; height: 28px; }
+.promo-card__text {
+  flex: 1;
+  min-width: 0;
+}
+.promo-card__title {
+  font: 700 14px/1.3 var(--font-family);
+  color: var(--color-gray-900);
+  letter-spacing: var(--ls-tight);
+}
+.promo-card__sub {
+  font: 400 12px/1.3 var(--font-family);
+  color: var(--color-gray-600);
+  margin-top: 2px;
+  letter-spacing: var(--ls-tight);
+}
+
+/* ─── Point Banner ─── */
+.point-banner {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--color-white);
+  border-radius: 12px;
+  border: 1px solid var(--color-gray-200);
+  gap: 10px;
+}
+.point-banner__icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.point-banner__icon img { width: 36px; height: 36px; }
+.point-banner__text {
+  flex: 1;
+  font: 500 14px/1 var(--font-family);
+  color: var(--color-gray-900);
+  letter-spacing: var(--ls-tight);
+}
+.point-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font: 700 12px/1 var(--font-family);
+  white-space: nowrap;
+}
+.point-badge--blue {
+  background: var(--color-blue-100);
+  color: var(--color-blue-500);
+}
+
+/* ─── Footer ─── */
+.footer {
+  padding: 20px;
+  background: var(--color-gray-100);
+  border-top: 1px solid var(--color-gray-200);
+}
+.footer__links {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.footer__link {
+  font: 400 12px/1 var(--font-family);
+  color: var(--color-gray-600);
+  cursor: pointer;
+}
+.footer__link--bold { font-weight: 700; }
+.footer__legal {
+  font: 400 11px/1.5 var(--font-family);
+  color: var(--color-gray-500);
+  letter-spacing: var(--ls-tight);
+}
+.footer__legal a { color: var(--color-gray-600); text-decoration: underline; }
+.footer__corp {
+  font: 400 11px/1.5 var(--font-family);
+  color: var(--color-gray-500);
+  margin-top: 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="status-bar__icons">
+      <svg viewBox="0 0 16 16"><path d="M1 11h2v4H1zM5 8h2v7H5zM9 5h2v10H9zM13 2h2v13h-2z"/></svg>
+      <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 107 7 7 7 0 00-7-7zm4.25 7.5h-3.5v3.75h-1.5V8.5h-3.5V7h3.5V3.25h1.5V7h3.5z"/></svg>
+      <svg viewBox="0 0 24 12"><rect x="0" y="1" width="20" height="10" rx="2" stroke="currentColor" fill="none" stroke-width="1.2"/><rect x="2" y="3" width="14" height="6" rx="1" fill="currentColor"/><path d="M22 5v3a2 2 0 000-3z" fill="currentColor" opacity="0.4"/></svg>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <img class="header__logo" src="../../figma-screens/assets/brand/IcNewNpayLogo.svg" alt="NPay">
+    <span class="header__service">금융</span>
+    <div class="header__spacer"></div>
+    <div class="header__actions">
+      <div class="icon-btn"><img src="../../figma-screens/assets/icons/ui/IcMenu.svg" alt="메뉴"></div>
+    </div>
+  </div>
+
+  <!-- Tab: 홈 / 예적금 / 대출 / 카드 / 보험 -->
+  <div class="line-tab">
+    <div class="line-tab__item line-tab__item--active">홈</div>
+    <div class="line-tab__item">예적금</div>
+    <div class="line-tab__item">대출</div>
+    <div class="line-tab__item">카드</div>
+    <div class="line-tab__item">보험</div>
+  </div>
+
+  <!-- Shortcut Grid (4×4) -->
+  <div class="shortcut-grid">
+    <!-- Row 1 -->
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/deposit.svg" alt=""></div>
+      <span class="shortcut-item__label">예금</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/credit-loan.svg" alt=""></div>
+      <span class="shortcut-item__label">신용대출</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/recommend-card.svg" alt=""></div>
+      <span class="shortcut-item__label">추천카드</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/car-insurance.svg" alt=""></div>
+      <span class="shortcut-item__label">자동차보험</span>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/savings.svg" alt=""></div>
+      <span class="shortcut-item__label">적금</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/mortgage.svg" alt=""></div>
+      <span class="shortcut-item__label">주택담보대출</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/money-card.svg" alt=""></div>
+      <span class="shortcut-item__label">머니카드</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/money-account.svg" alt=""></div>
+      <span class="shortcut-item__label">머니통장</span>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/parking-account.svg" alt=""></div>
+      <span class="shortcut-item__label">파킹통장</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/jeonse-loan.svg" alt=""></div>
+      <span class="shortcut-item__label">전월세대출</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/biz-loan.svg" alt=""></div>
+      <span class="shortcut-item__label">사업자대출</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/npay-card.svg" alt=""></div>
+      <span class="shortcut-item__label">Npay카드</span>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/interest-calc.svg" alt=""></div>
+      <span class="shortcut-item__label">이자계산기</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/loan-calc.svg" alt=""></div>
+      <span class="shortcut-item__label">대출계산기</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/exchange-calc.svg" alt=""></div>
+      <span class="shortcut-item__label">환율계산기</span>
+    </div>
+    <div class="shortcut-item">
+      <div class="shortcut-item__icon"><img src="../../figma-screens/assets/shortcut/salary-calc.svg" alt=""></div>
+      <span class="shortcut-item__label">연봉계산기</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ▸ 아낀 자동차보험료 TOP3 -->
+    <div class="content-section">
+      <div class="section-title-area">
+        <div class="section-title">아낀 자동차보험료 TOP3</div>
+        <div class="section-subtitle">벌써 38만명이 아꼈어요</div>
+      </div>
+      <div class="insurance-list">
+        <div class="insurance-row">
+          <div class="insurance-badge"><span class="dot"></span> 43만원↓</div>
+          <div class="insurance-amounts"><span class="old">105만원</span> <span class="arrow">›</span> <span class="new">78만원</span></div>
+        </div>
+        <div class="insurance-row">
+          <div class="insurance-badge"><span class="dot"></span> 33만원↓</div>
+          <div class="insurance-amounts"><span class="old">105만원</span> <span class="arrow">›</span> <span class="new">78만원</span></div>
+        </div>
+        <div class="insurance-row">
+          <div class="insurance-badge"><span class="dot"></span> 23만원↓</div>
+          <div class="insurance-amounts"><span class="old">105만원</span> <span class="arrow">›</span> <span class="new">78만원</span></div>
+        </div>
+      </div>
+      <button class="cta-btn cta-btn--green">내 차는 얼마나 아낄 수 있을까?</button>
+    </div>
+
+    <!-- ▸ 주담대 금리 차트 -->
+    <div class="content-section rate-section">
+      <div class="section-title-area">
+        <div class="section-title">주담대 금리가<br>지난주보다 올랐어요</div>
+      </div>
+      <div class="rate-tabs">
+        <div class="rate-tab rate-tab--active">새로받기</div>
+        <div class="rate-tab">갈아타기</div>
+      </div>
+      <div class="rate-chart">
+        <div class="rate-chart__value">3.66<small>%</small></div>
+        <div class="rate-chart__bar-group">
+          <div class="rate-chart__bar" style="height:40px"></div>
+          <div class="rate-chart__label">1월 1주</div>
+        </div>
+        <div class="rate-chart__bar-group">
+          <div class="rate-chart__bar" style="height:35px"></div>
+          <div class="rate-chart__label">2주</div>
+        </div>
+        <div class="rate-chart__bar-group">
+          <div class="rate-chart__bar" style="height:32px"></div>
+          <div class="rate-chart__label">3주</div>
+        </div>
+        <div class="rate-chart__bar-group">
+          <div class="rate-chart__bar" style="height:34px"></div>
+          <div class="rate-chart__label">4주</div>
+        </div>
+        <div class="rate-chart__bar-group">
+          <div class="rate-chart__bar rate-chart__bar--highlight" style="height:55px"></div>
+          <div class="rate-chart__label">2월 1주</div>
+        </div>
+      </div>
+      <button class="cta-btn cta-btn--blue">금리 더 오르기 전 확인</button>
+    </div>
+
+    <!-- ▸ 4월 자동차보험 카드 혜택 -->
+    <div class="content-section">
+      <div class="section-title-area">
+        <div class="section-title">4월 자동차보험 카드 혜택</div>
+      </div>
+      <div class="card-logos">
+        <div class="card-logo-chip"><div class="card-logo-chip__dot" style="background:#0063CE"></div>삼성카드</div>
+        <div class="card-logo-chip"><div class="card-logo-chip__dot" style="background:#D4380D"></div>현대카드</div>
+        <div class="card-logo-chip"><div class="card-logo-chip__dot" style="background:#FFCA28"></div>KB국민카드</div>
+        <div class="card-logo-chip"><div class="card-logo-chip__dot" style="background:#0097A7"></div>우리카드</div>
+      </div>
+      <div class="card-benefit-list">
+        <div class="card-benefit-item">
+          <div class="card-benefit-item__logo" style="background:#FFF3E0;color:#FF6F00">KB</div>
+          <span class="card-benefit-item__name">KB손해</span>
+          <span class="card-benefit-item__desc">청구할인 최대 3만원</span>
+        </div>
+        <div class="card-benefit-item">
+          <div class="card-benefit-item__logo" style="background:#E3F2FD;color:#1565C0">AXA</div>
+          <span class="card-benefit-item__name">AXA손해</span>
+          <span class="card-benefit-item__desc">청구할인 최대 3만원</span>
+        </div>
+        <div class="card-benefit-item">
+          <div class="card-benefit-item__logo" style="background:#FFF8E1;color:#F57F17">캐</div>
+          <span class="card-benefit-item__name">캐롯손해</span>
+          <span class="card-benefit-item__desc">청구할인 최대 3만원</span>
+        </div>
+        <div class="card-benefit-item">
+          <div class="card-benefit-item__logo" style="background:#FCE4EC;color:#C62828">삼</div>
+          <span class="card-benefit-item__name">삼성화재</span>
+          <span class="card-benefit-item__desc">캐시백 최대 3만원</span>
+        </div>
+      </div>
+      <button class="cta-btn cta-btn--red">혜택 포함 최저가 보험 찾기</button>
+    </div>
+
+    <!-- ▸ 5월 놀이공원 할인 카드 -->
+    <div class="content-section">
+      <div class="section-title-area">
+        <div class="section-title">5월 놀이공원 할인 카드</div>
+      </div>
+      <div class="promo-card">
+        <div class="promo-card__icon" style="background:#E3F2FD"><img src="../../figma-screens/assets/icons/ui/IcCard.svg" alt=""></div>
+        <div class="promo-card__text">
+          <div class="promo-card__title">롯데W카드</div>
+          <div class="promo-card__sub">전국 테마파크 최대 50%</div>
+        </div>
+      </div>
+      <div class="promo-card">
+        <div class="promo-card__icon" style="background:#EDE7F6"><img src="../../figma-screens/assets/icons/ui/IcCreditCard.svg" alt=""></div>
+        <div class="promo-card__text">
+          <div class="promo-card__title">삼성카드 3 V3</div>
+          <div class="promo-card__sub">에버랜드, 롯데월드 50% 현장할인</div>
+        </div>
+      </div>
+      <div class="promo-card">
+        <div class="promo-card__icon" style="background:#E0F7FA"><img src="../../figma-screens/assets/icons/ui/IcGlobe.svg" alt=""></div>
+        <div class="promo-card__text">
+          <div class="promo-card__title">씨티클리어카드</div>
+          <div class="promo-card__sub">테마파크 최대 50%</div>
+        </div>
+      </div>
+      <button class="cta-btn cta-btn--red" style="margin-top:12px">더보기</button>
+    </div>
+
+    <!-- ▸ 해외 결제는 100% 포인트백 -->
+    <div class="content-section">
+      <div class="section-title-area">
+        <div class="section-title">해외 결제는 100% 포인트백</div>
+      </div>
+      <div class="point-banner">
+        <div class="point-banner__icon"><img src="../../figma-screens/assets/brand/appIconNpay.svg" alt=""></div>
+        <span class="point-banner__text">네이버페이 머니카드</span>
+        <span class="point-badge point-badge--blue">포인트 ?원</span>
+      </div>
+    </div>
+
+    <!-- ▸ 첫 달 대출 이자 돌려드려요 -->
+    <div class="content-section">
+      <div class="section-title-area">
+        <div class="section-title">첫 달 대출 이자 돌려드려요</div>
+      </div>
+      <div class="point-banner">
+        <div class="point-banner__icon"><img src="../../figma-screens/assets/brand/IcNpayN.svg" alt=""></div>
+        <span class="point-banner__text">대출 비교하면 이자 지원</span>
+        <span class="point-badge point-badge--blue">포인트 ?원</span>
+      </div>
+    </div>
+
+    <!-- ▸ 사전 신청하고 포인트 뽑기 -->
+    <div class="content-section">
+      <div class="section-title-area">
+        <div class="section-title">사전 신청하고 포인트 뽑기</div>
+      </div>
+      <div class="point-banner">
+        <div class="point-banner__icon"><img src="../../figma-screens/assets/brand/BadgeNpay.svg" alt=""></div>
+        <span class="point-banner__text">전세대출 갈아타기</span>
+        <span class="point-badge point-badge--blue">포인트 ?원</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer__links">
+        <span class="footer__link">로그아웃</span>
+        <span class="footer__link">전체서비스</span>
+        <span class="footer__link">쇼핑&메일고객센터</span>
+      </div>
+      <div class="footer__links">
+        <span class="footer__link footer__link--bold">약관 및 정책</span>
+        <span class="footer__link">개인정보 처리방침</span>
+        <span class="footer__link">신용정보 활용체제</span>
+      </div>
+      <div class="footer__corp" style="margin-top:16px">
+        네이버페이 금융&포인트<br><br>
+        네이버파이낸셜(주)은 전자금융서비스제공자 및 통신판매중개자이며 통신판매의
+        당사자가 아닙니다. 상품, 상품정보 및 거래에 관한 의무와 책임은 판매자에게
+        있습니다.
+      </div>
+      <div class="footer__corp" style="margin-top:12px;text-decoration:underline;cursor:pointer">
+        네이버파이낸셜(주)에 사업자 정보 ›
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.line-tab__item').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelector('.line-tab__item--active')?.classList.remove('line-tab__item--active');
+    tab.classList.add('line-tab__item--active');
+  });
+});
+document.querySelectorAll('.rate-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelector('.rate-tab--active')?.classList.remove('rate-tab--active');
+    tab.classList.add('rate-tab--active');
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>종목토론 인기글 — 네이버 증권</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #E8E8E8;
+    color: #1E1E23;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    letter-spacing: -0.3px;
+  }
+
+  .phone-frame {
+    width: 393px;
+    min-height: 100vh;
+    background: #F5F6F8;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── Status Bar ── */
+  .status-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px;
+    font-size: 12px; font-weight: 600;
+    background: #fff;
+    height: 44px;
+  }
+  .status-bar .time { font-size: 14px; font-weight: 700; }
+  .status-bar .icons { display: flex; gap: 4px; align-items: center; }
+  .status-bar .icons svg { width: 16px; height: 16px; }
+
+  /* ── Top Header ── */
+  .top-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .top-header .logo {
+    font-size: 18px; font-weight: 800; color: #03C75A;
+    letter-spacing: -0.5px;
+  }
+  .top-header .logo span { color: #1E1E23; font-size: 16px; font-weight: 700; margin-left: 4px; }
+  .top-header .actions { display: flex; gap: 16px; align-items: center; }
+  .top-header .actions svg { width: 22px; height: 22px; color: #333; }
+
+  /* ── Nav Tabs ── */
+  .nav-tabs {
+    display: flex; gap: 0;
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    flex-shrink: 0;
+    padding: 12px 14px;
+    font-size: 14px; font-weight: 500; color: #999;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .nav-tab.active { color: #1E1E23; font-weight: 700; }
+  .nav-tab.active::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: #1E1E23;
+  }
+
+  /* ── Sub Tabs (HOT / 팔로잉 / MY) ── */
+  .sub-tabs {
+    display: flex;
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 0 16px;
+  }
+  .sub-tab {
+    padding: 12px 8px;
+    margin-right: 16px;
+    font-size: 15px; font-weight: 500; color: #999;
+    cursor: pointer;
+    position: relative;
+  }
+  .sub-tab.active { color: #1E1E23; font-weight: 700; }
+  .sub-tab.active::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: #1E1E23;
+  }
+
+  /* ── Clean Bot Banner ── */
+  .clean-bot-banner {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff;
+    padding: 10px 16px;
+    margin: 8px 0;
+    font-size: 12px; color: #666;
+    border-radius: 0;
+  }
+  .clean-bot-banner .bot-icon {
+    width: 18px; height: 18px;
+    background: #E8F5E9;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  .clean-bot-banner .setting-btn {
+    margin-left: auto;
+    font-size: 12px; color: #999;
+    cursor: pointer;
+  }
+
+  /* ── Influencer Section ── */
+  .influencer-section {
+    background: #fff;
+    padding: 16px 0 0;
+    margin-bottom: 8px;
+  }
+  .influencer-section .section-title {
+    font-size: 16px; font-weight: 700;
+    padding: 0 16px 12px;
+    color: #1E1E23;
+  }
+  .influencer-scroll {
+    display: flex;
+    overflow-x: auto;
+    padding: 0 16px 16px;
+    gap: 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .influencer-scroll::-webkit-scrollbar { display: none; }
+  .influencer-card {
+    flex-shrink: 0;
+    width: 280px;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .influencer-card .card-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px;
+    background: #fafafa;
+  }
+  .influencer-card .card-header .stock-name {
+    font-size: 12px; color: #03C75A; font-weight: 600;
+    background: #E8F5E9; padding: 2px 6px; border-radius: 4px;
+  }
+  .influencer-card .card-body {
+    padding: 12px;
+  }
+  .influencer-card .inf-profile {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .inf-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #ddd;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .inf-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .inf-meta .inf-badge {
+    font-size: 10px; color: #03C75A; font-weight: 600;
+    background: #E8F5E9; padding: 1px 5px; border-radius: 3px;
+    margin-right: 3px;
+  }
+  .inf-meta .inf-name { font-size: 12px; color: #666; }
+  .inf-meta .inf-date { font-size: 11px; color: #999; }
+  .influencer-card .card-title {
+    font-size: 14px; font-weight: 600;
+    color: #1E1E23;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── Post List ── */
+  .post-list { background: #F5F6F8; }
+  .post-item {
+    background: #fff;
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .post-item + .post-item { margin-top: 0; }
+
+  .post-stock {
+    font-size: 13px; font-weight: 600; color: #333;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .post-profile {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .post-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .post-avatar img, .post-avatar .avatar-placeholder {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .avatar-placeholder {
+    background: #ddd;
+    border-radius: 50%;
+  }
+
+  .post-user-info { display: flex; flex-direction: column; gap: 2px; }
+  .post-user-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .post-author { font-size: 13px; font-weight: 600; color: #333; }
+  .post-date { font-size: 12px; color: #999; }
+
+  /* ── Tags ── */
+  .tag {
+    display: inline-flex; align-items: center;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 6px; border-radius: 3px;
+    white-space: nowrap;
+  }
+  .tag-shareholder {
+    color: #E65100; background: #FFF3E0;
+  }
+  .tag-influencer {
+    color: #03C75A; background: #E8F5E9;
+  }
+  /* ── Asset Tags ── */
+  .tag-asset {
+    color: #0068E6; background: #E8F2FF;
+  }
+
+  .post-title {
+    font-size: 15px; font-weight: 600;
+    color: #1E1E23;
+    margin-bottom: 6px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .post-preview {
+    font-size: 13px; color: #666;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .post-image {
+    width: 100%; border-radius: 8px;
+    margin-bottom: 10px;
+    background: #f0f0f0;
+    height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    color: #bbb; font-size: 12px;
+    overflow: hidden;
+  }
+  .post-image img { width: 100%; height: 100%; object-fit: cover; }
+
+  .post-actions {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 12px; color: #999;
+  }
+  .post-action {
+    display: flex; align-items: center; gap: 3px;
+    cursor: pointer;
+  }
+  .post-action svg { width: 16px; height: 16px; }
+  .post-action.like svg { color: #E53935; }
+  .post-action.dislike svg { color: #1E88E5; }
+  .post-action.comment svg { color: #666; }
+  .post-action .count { font-weight: 500; }
+
+  /* ── Floating Write Button ── */
+  .fab-write {
+    position: fixed;
+    bottom: 80px; right: calc(50% - 375px/2 + 16px);
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: #03C75A;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 12px rgba(3,199,90,0.4);
+    cursor: pointer;
+    z-index: 100;
+  }
+  .fab-write svg { width: 22px; height: 22px; }
+
+  /* ── Bottom Navigation ── */
+  .bottom-nav {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    display: flex;
+    border-top: 1px solid #e8e8e8;
+    padding: 6px 0 env(safe-area-inset-bottom, 8px);
+    z-index: 99;
+  }
+  .bottom-nav-item {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 2px;
+    padding: 4px 0;
+    font-size: 10px; color: #999;
+    cursor: pointer;
+  }
+  .bottom-nav-item.active { color: #03C75A; }
+  .bottom-nav-item svg { width: 22px; height: 22px; }
+
+  /* ── Utility ── */
+  .divider { height: 8px; background: #F5F6F8; }
+  .more-btn {
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    background: #fff;
+    font-size: 14px; color: #666; font-weight: 500;
+    cursor: pointer;
+    border-top: 1px solid #f0f0f0;
+  }
+
+
+</style>
+</head>
+<body>
+<div class="phone-frame">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">10:41</span>
+    <div class="icons">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </div>
+  </div>
+
+  <!-- Top Header -->
+  <div class="top-header">
+    <div class="logo">N<span>증권</span></div>
+    <div class="actions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </div>
+  </div>
+
+  <!-- Nav Tabs -->
+  <div class="nav-tabs">
+    <div class="nav-tab">마켓</div>
+    <div class="nav-tab">MY</div>
+    <div class="nav-tab">국내</div>
+    <div class="nav-tab">해외</div>
+    <div class="nav-tab">공모주</div>
+    <div class="nav-tab active">토론</div>
+    <div class="nav-tab">지표</div>
+    <div class="nav-tab">가상자산</div>
+    <div class="nav-tab">투자정보</div>
+  </div>
+
+  <!-- Sub Tabs -->
+  <div class="sub-tabs">
+    <div class="sub-tab active">HOT</div>
+    <div class="sub-tab">팔로잉</div>
+    <div class="sub-tab">MY</div>
+  </div>
+
+  <!-- Clean Bot Banner -->
+  <div class="clean-bot-banner">
+    <div class="bot-icon">🛡️</div>
+    <span>클린봇이 악성게시글을 감지합니다.</span>
+    <span class="setting-btn">설정</span>
+  </div>
+
+  <!-- Influencer Section -->
+  <div class="influencer-section">
+    <div class="section-title">증권 인플루언서가 쓴 글</div>
+    <div class="influencer-scroll">
+      <!-- Card 1 -->
+      <div class="influencer-card">
+        <div class="card-header">
+          <span class="card-header stock-name">삼성전자</span>
+        </div>
+        <div class="card-body">
+          <div class="inf-profile">
+            <div class="inf-avatar"><div class="avatar-placeholder"></div></div>
+            <div class="inf-meta">
+              <div style="display:flex;align-items:center;gap:4px">
+                <span class="inf-badge">인플루언서</span>
+                <span class="tag tag-asset">상위5%자산인증</span>
+              </div>
+              <span class="inf-name">경제토르 · 2026.04.07.</span>
+            </div>
+          </div>
+          <div class="card-title">오늘 실적발표일이 아니라 재료소멸의 날 입니다</div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="influencer-card">
+        <div class="card-header">
+          <span class="card-header stock-name">두산밥캣</span>
+        </div>
+        <div class="card-body">
+          <div class="inf-profile">
+            <div class="inf-avatar"><div class="avatar-placeholder"></div></div>
+            <div class="inf-meta">
+              <div style="display:flex;align-items:center;gap:4px">
+                <span class="inf-badge">인플루언서</span>
+                <span class="tag tag-asset">상위10%자산인증</span>
+              </div>
+              <span class="inf-name">직장인경제노트 · 2026.03.13.</span>
+            </div>
+          </div>
+          <div class="card-title">멕시코 공장 완성되면 주가 떡상각?</div>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="influencer-card">
+        <div class="card-header">
+          <span class="card-header stock-name">나스닥 종합</span>
+        </div>
+        <div class="card-body">
+          <div class="inf-profile">
+            <div class="inf-avatar"><div class="avatar-placeholder"></div></div>
+            <div class="inf-meta">
+              <div style="display:flex;align-items:center;gap:4px">
+                <span class="inf-badge">인플루언서</span>
+                <span class="tag tag-asset">상위1%자산인증</span>
+              </div>
+              <span class="inf-name">에이다웡 · 2026.04.03.</span>
+            </div>
+          </div>
+          <div class="card-title">4.3일 나스닥 전망 차트분석 + 긴급 브리핑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Post List -->
+  <div class="post-list">
+
+    <!-- Post 1: 주주 + 상위10%자산 -->
+    <div class="post-item">
+      <div class="post-stock">삼성전자</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">kwang3701</span>
+            <span class="tag tag-shareholder">주주</span>
+            <span class="tag tag-asset">상위10%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.06.</span>
+        </div>
+      </div>
+      <div class="post-title">공매도, 기관애들 또 수작부렸네ㅋㅋㅋ대단하다ㅋㅋ</div>
+      <div class="post-preview">원래 연초 1분기 시장 컨센서스가 32조수준이였는데 ㅋㅋ 32조 이상만 되면 어닝서프라이즈인데 저번주부터 갑자기 공매세력들 기관하고 손잡고 예상영업이익 40조 50조라고 시장에 소문 뿌리더니...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">309</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">38</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">25</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 2: 주주 + 상위1%자산 -->
+    <div class="post-item">
+      <div class="post-stock">삼천당제약</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">하나짱</span>
+            <span class="tag tag-shareholder">주주</span>
+            <span class="tag tag-asset">상위1%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.02.</span>
+        </div>
+      </div>
+      <div class="post-title">[시즌3] - 3부 작성중에 한마디하면요</div>
+      <div class="post-preview">안티, 단타, 초보 접근금지, 여기서 초보는 몇십년을 투자햇어도, 삼천당을 모르면 그냥 초보입니다. 주식투자한지 얼마안되엇어도...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">435</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">134</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">133</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 3: 태그 없음 (일반 유저) + 상위50%자산 -->
+    <div class="post-item">
+      <div class="post-stock">휴림로봇</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">프락</span>
+            <span class="tag tag-asset">상위50%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.07.</span>
+        </div>
+      </div>
+      <div class="post-title">AI에게 냉정하게 휴림 M&A</div>
+      <div class="post-preview">현재 휴림로봇의 재무 상태나 지배구조 붕괴를 보면 '이런 속 빈 강정 같은 회사를 누가 인수할까?'라는 합리적인 의심이 드는 것이 당연합니다...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">37</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">6</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 4: 주주 + 상위5%자산 -->
+    <div class="post-item">
+      <div class="post-stock">신성델타테크</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">불심</span>
+            <span class="tag tag-shareholder">주주</span>
+            <span class="tag tag-asset">상위5%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.06.</span>
+        </div>
+      </div>
+      <div class="post-title">끝내 특허 등록을 거절한다면?</div>
+      <div class="post-preview">대한민국 특허등록은 포기하고, 일본이나 호주 특허로 상용화하면 안되나? 대한민국 특허청과 저온학회는 지금 '직무 유기중'이다...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">144</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">10</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">6</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 5: 주주 + 상위20%자산 -->
+    <div class="post-item">
+      <div class="post-stock">한화솔루션</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">SeNo</span>
+            <span class="tag tag-shareholder">주주</span>
+            <span class="tag tag-asset">상위20%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.07.</span>
+        </div>
+      </div>
+      <div class="post-title">역대급 경이로운 속도로 3% 주주 결집</div>
+      <div class="post-preview">액트 플랫폼 3.01% 주주결집. 6~7조원대 대기업에서 12일 동안 3% 결집한 사례는 한국 자본시장 역사상 전례 없는 기록...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">96</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">0</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">7</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 6: 주주 + 상위10%자산인증 -->
+    <div class="post-item">
+      <div class="post-stock">SK하이닉스</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">2026은반도체의해</span>
+            <span class="tag tag-asset">상위10%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.06.</span>
+        </div>
+      </div>
+      <div class="post-title">1분기 실적</div>
+      <div class="post-preview">삼전 미친실적 예고 되있는데 4월말 하이닉은 더 미친실적이고 20만전자 - 100만닉스는 우스운 숫자 단기 30...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">96</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">14</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">6</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 7: 태그 없음 -->
+    <div class="post-item">
+      <div class="post-stock">POSCO홀딩스</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">차가운머리</span>
+          </div>
+          <span class="post-date">2026.04.06.</span>
+        </div>
+      </div>
+      <div class="post-title">지쳐 떠납니다</div>
+      <div class="post-preview">2년이상 보유하다 넘 힘들어 결국 떠납니다. 2차전지 대장주를 기대하며 희망을 품고 기둘렸었는데 약30퍼 손절로 마무리했습니다...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">137</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">7</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">28</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 8: 주주 + 상위10%자산 -->
+    <div class="post-item">
+      <div class="post-stock">삼성전자</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">신박한호재이슈고인물</span>
+            <span class="tag tag-shareholder">주주</span>
+            <span class="tag tag-asset">상위10%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.06.</span>
+        </div>
+      </div>
+      <div class="post-title">트럼프, 이란 협상 타결 전망에 "내일 가능성 크다"</div>
+      <div class="post-preview">내일 폭등 예상</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">250</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">132</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">37</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 9: 주주 + 상위1%자산 -->
+    <div class="post-item">
+      <div class="post-stock">대우건설</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">중복없음</span>
+            <span class="tag tag-shareholder">주주</span>
+            <span class="tag tag-asset">상위1%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.04.</span>
+        </div>
+      </div>
+      <div class="post-title">[충격] 대우건설, 4월3일 국내 뉴스에서 미국투자 1차분 기사, 기습적으로 터트려 버림</div>
+      <div class="post-preview">[시총 93위 유지중] 그동안 줄곧 강조해온 내용 중 대우건설의 가장큰 호재는 바로 외인 공매도 세력들의 '외통수'...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">164</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">11</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">17</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 10: 상위20%자산 -->
+    <div class="post-item">
+      <div class="post-stock">펄어비스</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">멋진현물마스코트</span>
+            <span class="tag tag-shareholder">주주</span>
+            <span class="tag tag-asset">상위20%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.04.</span>
+        </div>
+      </div>
+      <div class="post-title">중국 현지 반응 업데이트(via Kimi 2.5 Thinking)</div>
+      <div class="post-preview">《붉은사막》4월 4일(오늘) 중국 현지 최신 데이터 업데이트. 기준 시간: 2026년 4월 4일 20:49 (한국시간)...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">233</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">13</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">4</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 11: LS ELECTRIC -->
+    <div class="post-item">
+      <div class="post-stock">LS ELECTRIC</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">불갬히</span>
+          </div>
+          <span class="post-date">오전 9:41</span>
+        </div>
+      </div>
+      <div class="post-title">상폐되나요?</div>
+      <div class="post-preview">거래정지왜걸린거임?</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">5</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">3</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post 12: 주주 + 상위5%자산 -->
+    <div class="post-item">
+      <div class="post-stock">현대차</div>
+      <div class="post-profile">
+        <div class="post-avatar"><div class="avatar-placeholder"></div></div>
+        <div class="post-user-info">
+          <div class="post-user-row">
+            <span class="post-author">MRYOO</span>
+            <span class="tag tag-asset">상위5%자산인증</span>
+          </div>
+          <span class="post-date">2026.04.04.</span>
+        </div>
+      </div>
+      <div class="post-title">그냥 알바글들 보지 마세요..</div>
+      <div class="post-preview">지금보다는 오릅니다... 걱정마시고 두세요~ 듣보잡 기업 아니잖아요...... 삼성 하이닉스 현대 기아 이런기업들 주가 폭락하면 우리나라 자체가 망해요...</div>
+      <div class="post-actions">
+        <div class="post-action like">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span class="count">171</span>
+        </div>
+        <div class="post-action dislike">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10zM17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+          <span class="count">39</span>
+        </div>
+        <div class="post-action comment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="count">10</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- More Button -->
+    <div class="more-btn">더보기 ▾</div>
+  </div>
+
+  <!-- FAB Write -->
+  <div class="fab-write">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      금융
+    </div>
+    <div class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      포인트
+    </div>
+    <div class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      결제
+    </div>
+    <div class="bottom-nav-item active">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+      증권
+    </div>
+    <div class="bottom-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM3 9h18M9 21V9"/></svg>
+      부동산
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

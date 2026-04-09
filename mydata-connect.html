@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>마이데이터 자산 연결 — 와이어프레임</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    background: #F5F5F5;
+    color: #1E1E23;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    letter-spacing: -0.3px;
+  }
+  .phone-frame {
+    width: 393px;
+    min-height: 100vh;
+    background: #fff;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Status Bar ── */
+  .status-bar {
+    height: 44px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 20px;
+    font-size: 12px; font-weight: 600;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-weight: 700; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .status-bar .icons svg { width: 16px; height: 16px; fill: #1E1E23; }
+
+  /* ── Header (Close only) ── */
+  .header-close {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 16px;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .header-close .close-btn {
+    width: 24px; height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header-close .close-btn svg {
+    width: 20px; height: 20px;
+    stroke: #1E1E23;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  /* ── Title ── */
+  .title-section {
+    padding: 8px 20px 24px;
+    background: #fff;
+  }
+  .title-section h1 {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.4;
+    letter-spacing: -0.8px;
+    color: #1E1E23;
+    margin-bottom: 8px;
+  }
+  .title-section .sub {
+    font-size: 14px;
+    color: #767678;
+    font-weight: 400;
+  }
+
+  /* ── Card List ── */
+  .card-list {
+    padding: 8px 20px 0;
+    background: #fff;
+    flex: 1;
+  }
+  .benefit-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: #F6F8FA;
+    border-radius: 14px;
+    margin-bottom: 12px;
+  }
+  .benefit-card .card-text {
+    flex: 1;
+  }
+  .benefit-card .card-text .ct-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1E1E23;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .benefit-card .card-text .ct-title .info-icon {
+    width: 15px; height: 15px;
+    fill: #c0c0c0;
+    flex-shrink: 0;
+  }
+  .benefit-card .card-text .ct-desc {
+    font-size: 13px;
+    color: #767678;
+    line-height: 1.4;
+  }
+  .benefit-card .card-illust {
+    width: 64px; height: 64px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 16px;
+  }
+  /* Placeholder illustrations */
+  .illust-box {
+    width: 58px; height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* ── Bottom Area ── */
+  .bottom-area {
+    padding: 16px 20px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 12px));
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .cta-button {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: #00DE5A;
+    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    letter-spacing: -0.3px;
+  }
+  .sub-link {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #767678;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  /* ── Naver Toolbar ── */
+  .naver-toolbar {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+    flex-shrink: 0;
+    padding: 0 12px;
+  }
+  .naver-toolbar .tb-icon {
+    width: 30px; height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .naver-toolbar .tb-icon svg {
+    width: 20px; height: 20px;
+    fill: #999;
+  }
+  .naver-toolbar .tb-dot {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #D9D9D9;
+    position: relative;
+  }
+  .naver-toolbar .tb-dot::after {
+    content: '';
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .naver-toolbar .active-bar {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 143px; height: 5px;
+    background: #000;
+    border-radius: 3px;
+  }
+
+  /* ── From badge ── */
+  .from-badge {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1E1E23;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    z-index: 100;
+    animation: fadeUp 0.5s ease-out;
+  }
+  .from-badge a { color: #8AC4FF; text-decoration: underline; cursor: pointer; }
+  @keyframes fadeUp {
+    0% { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+
+<!-- Status Bar -->
+<div class="status-bar">
+  <span class="time">9:41</span>
+  <div class="icons">
+    <svg viewBox="0 0 17 12"><path d="M1 8h2v4H1zM5 5.5h2V12H5zM9 3h2v9H9zM13 .5h2V12h-2z"/></svg>
+    <svg viewBox="0 0 16 12"><path d="M8 3.6a8.4 8.4 0 015.6 2.1l-1.2 1.2A6.5 6.5 0 008 5.4a6.5 6.5 0 00-4.4 1.5L2.4 5.7A8.4 8.4 0 018 3.6zm0 3.6a5 5 0 013.4 1.3l-1.2 1.2A3.1 3.1 0 008 9a3.1 3.1 0 00-2.2.7L4.6 8.5A5 5 0 018 7.2zm0 3.6a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/></svg>
+    <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" fill="none" stroke-width="1.2"/><rect x="2" y="3" width="15" height="6" rx="1" fill="currentColor"/><path d="M23 5v3a2 2 0 000-3z" fill="currentColor" opacity="0.4"/></svg>
+  </div>
+</div>
+
+<!-- Header: Close (X) -->
+<div class="header-close">
+  <div class="close-btn" onclick="history.back()">
+    <svg viewBox="0 0 24 24" fill="none"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+  </div>
+</div>
+
+<!-- Title -->
+<div class="title-section">
+  <h1>흩어진 자산을 찾아<br>안전하게 관리해요</h1>
+  <div class="sub">30초면 연결할 수 있어요</div>
+</div>
+
+<!-- Card List -->
+<div class="card-list">
+
+  <!-- Card 1: 총자산 모아 보기 -->
+  <div class="benefit-card">
+    <div class="card-text">
+      <div class="ct-title">총자산 모아 보기</div>
+      <div class="ct-desc">투자・소비·코인·부동산을 한 눈에</div>
+    </div>
+    <div class="card-illust">
+      <svg width="58" height="46" viewBox="0 0 58 46" fill="none">
+        <!-- Card + laptop illustration -->
+        <rect x="8" y="14" width="42" height="28" rx="4" fill="#E8EBF4" stroke="#C0C8D8" stroke-width="1"/>
+        <rect x="14" y="20" width="20" height="14" rx="2" fill="#2A2A2A"/>
+        <rect x="16" y="23" width="8" height="2" rx="1" fill="#666"/>
+        <rect x="16" y="27" width="12" height="2" rx="1" fill="#444"/>
+        <circle cx="42" cy="22" r="8" fill="#B8D4E3"/>
+        <rect x="38" y="18" width="8" height="8" rx="1" fill="#3B7DD8" opacity="0.6"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Card 2: 투자 자산 분석하기 -->
+  <div class="benefit-card">
+    <div class="card-text">
+      <div class="ct-title">투자 자산 분석하기</div>
+      <div class="ct-desc">배당금・수익률 모아 자산 증감 확인해요</div>
+    </div>
+    <div class="card-illust">
+      <svg width="58" height="50" viewBox="0 0 58 50" fill="none">
+        <!-- Bar chart / candlestick illustration -->
+        <rect x="6" y="30" width="8" height="16" rx="2" fill="#E04040"/>
+        <rect x="18" y="20" width="8" height="26" rx="2" fill="#03C75A"/>
+        <rect x="30" y="24" width="8" height="22" rx="2" fill="#E04040"/>
+        <rect x="42" y="10" width="8" height="36" rx="2" fill="#03C75A"/>
+        <!-- Candle wicks -->
+        <line x1="10" y1="26" x2="10" y2="30" stroke="#E04040" stroke-width="2"/>
+        <line x1="22" y1="14" x2="22" y2="20" stroke="#03C75A" stroke-width="2"/>
+        <line x1="34" y1="18" x2="34" y2="24" stroke="#E04040" stroke-width="2"/>
+        <line x1="46" y1="4" x2="46" y2="10" stroke="#03C75A" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Card 3: 금융 일정 브리핑 -->
+  <div class="benefit-card">
+    <div class="card-text">
+      <div class="ct-title">금융 일정 브리핑</div>
+      <div class="ct-desc">매일 내 자산 맞춤 소식 알려드려요</div>
+    </div>
+    <div class="card-illust">
+      <svg width="58" height="50" viewBox="0 0 58 50" fill="none">
+        <!-- Calendar + coin illustration -->
+        <rect x="4" y="6" width="36" height="36" rx="4" fill="#fff" stroke="#D0D5DD" stroke-width="1.5"/>
+        <rect x="4" y="6" width="36" height="10" rx="4" fill="#03C75A" opacity="0.15"/>
+        <line x1="4" y1="16" x2="40" y2="16" stroke="#D0D5DD" stroke-width="1"/>
+        <circle cx="14" cy="24" r="2" fill="#03C75A"/>
+        <circle cx="22" cy="24" r="2" fill="#DDD"/>
+        <circle cx="30" cy="24" r="2" fill="#DDD"/>
+        <circle cx="14" cy="32" r="2" fill="#DDD"/>
+        <circle cx="22" cy="32" r="2" fill="#03C75A"/>
+        <circle cx="30" cy="32" r="2" fill="#DDD"/>
+        <!-- Coins -->
+        <ellipse cx="48" cy="36" rx="9" ry="4" fill="#FFD54F" opacity="0.7"/>
+        <ellipse cx="48" cy="32" rx="9" ry="4" fill="#FFD54F"/>
+        <text x="45" y="35" font-size="7" font-weight="700" fill="#B8860B">₩</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Card 4: 대출 금리 인하 신청 -->
+  <div class="benefit-card">
+    <div class="card-text">
+      <div class="ct-title">
+        대출 금리 인하 신청
+        <svg class="info-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+      </div>
+      <div class="ct-desc">금리 낮출 수 있을지 알아서 확인해요</div>
+    </div>
+    <div class="card-illust">
+      <svg width="58" height="50" viewBox="0 0 58 50" fill="none">
+        <!-- Money bag + down arrow illustration -->
+        <circle cx="32" cy="28" r="16" fill="#03C75A" opacity="0.15"/>
+        <path d="M24 22c0-6 8-12 8-12s8 6 8 12c0 8-4 16-8 18-4-2-8-10-8-18z" fill="#03C75A" opacity="0.3"/>
+        <text x="28" y="32" font-size="12" font-weight="800" fill="#03C75A">%</text>
+        <!-- Down arrow -->
+        <path d="M16 18l-4 8h3v6h2v-6h3l-4-8z" fill="#3B7DD8" transform="rotate(180 16 25)"/>
+      </svg>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom CTA -->
+<div class="bottom-area">
+  <button class="cta-button" onclick="alert('마이데이터 연결을 시작합니다')">한 번에 연결하기</button>
+  <div class="sub-link">직접 고르기</div>
+</div>
+
+<!-- Naver Browser Toolbar -->
+<div class="naver-toolbar" style="position: relative;">
+  <!-- Naver logo -->
+  <div class="tb-icon">
+    <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="4" fill="#fff" stroke="#ddd" stroke-width="1.5"/><text x="7" y="17" font-size="12" font-weight="800" fill="#03C75A">N</text></svg>
+  </div>
+  <!-- Back -->
+  <div class="tb-icon">
+    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="#999"/></svg>
+  </div>
+  <!-- Forward -->
+  <div class="tb-icon">
+    <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="#ccc"/></svg>
+  </div>
+  <!-- Green dot -->
+  <div class="tb-dot"></div>
+  <!-- Refresh -->
+  <div class="tb-icon">
+    <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="#999"/></svg>
+  </div>
+  <!-- Share -->
+  <div class="tb-icon">
+    <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" fill="#999"/></svg>
+  </div>
+  <!-- Menu -->
+  <div class="tb-icon">
+    <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="#999"/></svg>
+  </div>
+  <div class="active-bar"></div>
+</div>
+
+<!-- From badge -->
+<div class="from-badge" id="fromBadge" style="display:none;">
+  네이버증권 → 내주식에서 진입 &nbsp;·&nbsp; <a onclick="history.back()">돌아가기</a>
+</div>
+
+</div><!-- /phone-frame -->
+
+<script>
+// Show "from" badge if referred from naver-stock-home
+if (document.referrer.includes('naver-stock-home')) {
+  document.getElementById('fromBadge').style.display = '';
+  setTimeout(() => { document.getElementById('fromBadge').style.display = 'none'; }, 4000);
+}
+</script>
+</body>
+</html>

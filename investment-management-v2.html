@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>투자 관리 v2 — Wireframe</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    background: #E8E8E8;
+    color: #1E1E23;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    letter-spacing: -0.3px;
+  }
+
+  :root {
+    --bg: #F5F5F5;
+    --surface: #FFFFFF;
+    --border: #E5E5E5;
+    --text-primary: #1E1E23;
+    --text-secondary: #6B6B6B;
+    --text-tertiary: #999999;
+    --tag-bg: #F3F3F3;
+    --divider: #EEEEEE;
+    --card-gap: 8px;
+  }
+
+  .phone-frame {
+    width: 393px;
+    min-height: 100vh;
+    background: var(--bg);
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── Status Bar ── */
+  .status-bar {
+    height: 44px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 20px;
+    font-size: 12px; font-weight: 600;
+    background: var(--surface);
+  }
+  .status-bar .time { font-weight: 700; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .status-bar .icons svg { width: 16px; height: 16px; fill: var(--text-primary); }
+
+  /* ── NPay Header ── */
+  .npay-header {
+    display: flex; align-items: center;
+    height: 56px; padding: 0 20px;
+    background: var(--surface);
+    position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid var(--border);
+  }
+  .npay-header .logo { font-size: 18px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.8px; }
+  .npay-header .logo .n { color: #03C75A; }
+  .npay-header .service-name { font-size: 16px; font-weight: 700; margin-left: 4px; }
+  .npay-header .spacer { flex: 1; }
+  .npay-header .header-actions { display: flex; gap: 10px; }
+  .npay-header .icon-btn { width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .npay-header .icon-btn svg { width: 22px; height: 22px; fill: var(--text-secondary); }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    margin-top: var(--card-gap);
+    padding: 20px;
+  }
+  .card:first-child { margin-top: 0; }
+  .card-title {
+    font-size: 16px; font-weight: 700; letter-spacing: -0.5px;
+    margin-bottom: 14px;
+  }
+  .card-more {
+    font-size: 12px; color: var(--text-tertiary); cursor: pointer;
+  }
+  .card-top {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+
+  /* ── Issue Briefing (오늘 알아야 할 것) ── */
+  .briefing-header {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 16px;
+  }
+  .briefing-header .date {
+    font-size: 13px; color: var(--text-tertiary); font-weight: 500;
+  }
+  .briefing-header .badge {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 10px;
+    background: var(--text-primary); color: #fff;
+  }
+  .issue-item {
+    padding: 14px 16px;
+    background: var(--tag-bg);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    position: relative;
+  }
+  .issue-item:last-child { margin-bottom: 0; }
+  .issue-item .issue-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 1px 5px; border-radius: 3px;
+    margin-bottom: 6px;
+  }
+  .issue-item .issue-tag.market { background: #DDD; color: #444; }
+  .issue-item .issue-tag.my { background: var(--text-primary); color: #fff; }
+  .issue-item .issue-tag.action { background: #BBB; color: #fff; }
+  .issue-item .issue-title {
+    font-size: 14px; font-weight: 600; line-height: 1.4;
+    margin-bottom: 4px;
+  }
+  .issue-item .issue-detail {
+    font-size: 12px; color: var(--text-secondary); line-height: 1.4;
+  }
+  .issue-item .arrow {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 14px; color: var(--text-tertiary);
+  }
+  .issue-item .impact {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 6px;
+    font-size: 11px; font-weight: 600;
+    padding: 3px 8px; border-radius: 4px;
+    background: #E8E8E8;
+  }
+
+  /* ── Summary Strip ── */
+  .summary-strip {
+    display: flex; gap: 0;
+    background: var(--surface);
+    margin-top: var(--card-gap);
+  }
+  .summary-cell {
+    flex: 1;
+    padding: 16px 12px;
+    text-align: center;
+    border-right: 1px solid var(--divider);
+    cursor: pointer;
+  }
+  .summary-cell:last-child { border-right: none; }
+  .summary-cell .label {
+    font-size: 11px; color: var(--text-tertiary);
+    margin-bottom: 4px;
+  }
+  .summary-cell .value {
+    font-size: 18px; font-weight: 800; letter-spacing: -0.8px;
+  }
+  .summary-cell .sub {
+    font-size: 10px; color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* ── Portfolio Mini ── */
+  .portfolio-row {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .mini-donut {
+    width: 80px; height: 80px; flex-shrink: 0;
+    position: relative;
+  }
+  .mini-donut svg { width: 100%; height: 100%; }
+  .mini-donut .center-label {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 11px; font-weight: 700; text-align: center;
+  }
+  .portfolio-badges {
+    flex: 1;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .p-badge {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px;
+    background: var(--tag-bg);
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .p-badge .left { display: flex; align-items: center; gap: 6px; }
+  .p-badge .dot { width: 8px; height: 8px; border-radius: 2px; }
+  .p-badge .status { font-weight: 600; }
+  .p-badge .status.warn { color: var(--text-primary); }
+  .p-badge .status.ok { color: var(--text-tertiary); }
+
+  /* ── Action Banner ── */
+  .action-banner {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: var(--tag-bg);
+    border-radius: 10px;
+    margin-top: 12px;
+    cursor: pointer;
+  }
+  .action-banner .icon-circle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  .action-banner .info { flex: 1; }
+  .action-banner .info .title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .action-banner .info .desc { font-size: 11px; color: var(--text-secondary); }
+  .action-banner .chevron { font-size: 14px; color: var(--text-tertiary); }
+
+  /* ── Recent Journal ── */
+  .journal-item {
+    display: flex; gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--divider);
+  }
+  .journal-item:last-child { border-bottom: none; }
+  .j-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .j-dot.buy { background: var(--text-primary); }
+  .j-dot.dividend { background: #999; }
+  .j-dot.market { background: #CCC; }
+  .j-body { flex: 1; }
+  .j-body .j-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .j-body .j-detail { font-size: 12px; color: var(--text-secondary); }
+  .j-body .j-date { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* ── Schedule ── */
+  .schedule-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--divider);
+  }
+  .schedule-item:last-child { border-bottom: none; }
+  .s-date-box {
+    width: 44px; height: 44px;
+    background: var(--tag-bg);
+    border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .s-date-box .day { font-size: 16px; font-weight: 800; }
+  .s-date-box .month { font-size: 9px; color: var(--text-tertiary); }
+  .s-body { flex: 1; }
+  .s-body .s-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .s-body .s-detail { font-size: 12px; color: var(--text-secondary); }
+  .s-body .s-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    padding: 1px 5px; border-radius: 3px;
+    background: #E8E8E8; color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* ── Peer Comparison Inline ── */
+  .peer-inline {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    background: var(--tag-bg);
+    border-radius: 10px;
+    margin-top: 12px;
+  }
+  .peer-rank {
+    font-size: 22px; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .peer-info { flex: 1; }
+  .peer-info .peer-label { font-size: 12px; color: var(--text-secondary); }
+  .peer-info .peer-detail { font-size: 11px; color: var(--text-tertiary); margin-top: 1px; }
+
+  /* ── Footer pad ── */
+  .page-content { padding-bottom: 24px; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+<!-- Status Bar -->
+<div class="status-bar">
+  <span class="time">9:41</span>
+  <div class="icons">
+    <svg viewBox="0 0 17 12"><path d="M1 8h2v4H1zM5 5.5h2V12H5zM9 3h2v9H9zM13 .5h2V12h-2z"/></svg>
+    <svg viewBox="0 0 16 12"><path d="M8 3.6a8.4 8.4 0 015.6 2.1l-1.2 1.2A6.5 6.5 0 008 5.4a6.5 6.5 0 00-4.4 1.5L2.4 5.7A8.4 8.4 0 018 3.6zm0 3.6a5 5 0 013.4 1.3l-1.2 1.2A3.1 3.1 0 008 9a3.1 3.1 0 00-2.2.7L4.6 8.5A5 5 0 018 7.2zm0 3.6a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/></svg>
+    <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" fill="none" stroke-width="1.2"/><rect x="2" y="3" width="15" height="6" rx="1" fill="currentColor"/><path d="M23 5v3a2 2 0 000-3z" fill="currentColor" opacity="0.4"/></svg>
+  </div>
+</div>
+
+<!-- NPay Header -->
+<div class="npay-header">
+  <span class="logo"><span class="n">N</span>pay</span>
+  <span class="service-name">자산</span>
+  <div class="spacer"></div>
+  <div class="header-actions">
+    <div class="icon-btn">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    </div>
+    <div class="icon-btn">
+      <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- 1. 오늘 알아야 할 것 (이슈 브리핑) -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="card">
+    <div class="briefing-header">
+      <span style="font-size: 16px; font-weight: 700;">오늘의 투자 브리핑</span>
+      <span class="badge">3건</span>
+      <div style="flex:1"></div>
+      <span class="date">4월 7일 월요일</span>
+    </div>
+
+    <!-- Issue 1: 시장 → 내 종목 영향 -->
+    <div class="issue-item">
+      <span class="issue-tag market">시장 이슈</span>
+      <div class="issue-title">미국 상호관세 시행 — 반도체·가상자산 동반 하락</div>
+      <div class="issue-detail">내 보유 자산 4개에 영향</div>
+      <div class="impact">📉 삼성전자 -2.8% · SK하이닉스 -3.1% · BTC -4.2% · 금 ETF +1.1%</div>
+      <span class="arrow">›</span>
+    </div>
+
+    <!-- Issue 2: 내 성과 요약 -->
+    <div class="issue-item">
+      <span class="issue-tag my">내 성과</span>
+      <div class="issue-title">이번 달 총 투자수익률 +3.2% — 또래 상위 28%</div>
+      <div class="issue-detail">주식 +4.1% · 가상자산 -2.3% · 금 +8.5% — 금이 수익률 방어 중</div>
+      <span class="arrow">›</span>
+    </div>
+
+    <!-- Issue 3: 행동 유도 -->
+    <div class="issue-item">
+      <span class="issue-tag action">리밸런싱</span>
+      <div class="issue-title">가상자산 비중 22%로 편중 ⚠️</div>
+      <div class="issue-detail">BTC 단일 자산이 전체의 18% — 분산 투자 검토해보세요</div>
+      <span class="arrow">›</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- 2. 핵심 숫자 (Summary Strip) -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="summary-strip">
+    <div class="summary-cell">
+      <div class="label">총 수익률</div>
+      <div class="value">+8.7%</div>
+      <div class="sub">3개월 기준</div>
+    </div>
+    <div class="summary-cell">
+      <div class="label">평가금액</div>
+      <div class="value" style="font-size: 16px;">5,180만</div>
+      <div class="sub">+418만</div>
+    </div>
+    <div class="summary-cell">
+      <div class="label">또래 순위</div>
+      <div class="value">상위 28%</div>
+      <div class="sub">30대 공격형</div>
+    </div>
+  </div>
+
+  <!-- 자산유형별 미니 요약 -->
+  <div style="background: var(--surface); margin-top: 1px; padding: 10px 20px; display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+    <div style="flex-shrink: 0; padding: 6px 12px; background: var(--tag-bg); border-radius: 8px; font-size: 11px; text-align: center;">
+      <div style="font-weight: 700;">주식·ETF</div>
+      <div style="color: var(--text-secondary); margin-top: 2px;">2,480만 <span style='font-weight:600'>+4.1%</span></div>
+    </div>
+    <div style="flex-shrink: 0; padding: 6px 12px; background: var(--tag-bg); border-radius: 8px; font-size: 11px; text-align: center;">
+      <div style="font-weight: 700;">가상자산</div>
+      <div style="color: var(--text-secondary); margin-top: 2px;">1,140만 <span style='font-weight:600'>-2.3%</span></div>
+    </div>
+    <div style="flex-shrink: 0; padding: 6px 12px; background: var(--tag-bg); border-radius: 8px; font-size: 11px; text-align: center;">
+      <div style="font-weight: 700;">금</div>
+      <div style="color: var(--text-secondary); margin-top: 2px;">820만 <span style='font-weight:600'>+8.5%</span></div>
+    </div>
+    <div style="flex-shrink: 0; padding: 6px 12px; background: var(--tag-bg); border-radius: 8px; font-size: 11px; text-align: center;">
+      <div style="font-weight: 700;">펀드·채권</div>
+      <div style="color: var(--text-secondary); margin-top: 2px;">740만 <span style='font-weight:600'>+2.1%</span></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- 3. 내 포트폴리오 요약 (압축형) -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-top">
+      <span class="card-title" style="margin-bottom:0">내 포트폴리오</span>
+      <span class="card-more">상세 분석 ›</span>
+    </div>
+
+    <div class="portfolio-row">
+      <div class="mini-donut">
+        <svg viewBox="0 0 80 80">
+          <!-- 주식 32% -->
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#2A2A2A" stroke-width="10"
+            stroke-dasharray="64 138" stroke-dashoffset="-32" />
+          <!-- 가상자산 22% -->
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#555" stroke-width="10"
+            stroke-dasharray="44 158" stroke-dashoffset="-96" />
+          <!-- 금 16% -->
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#888" stroke-width="10"
+            stroke-dasharray="32 170" stroke-dashoffset="-140" />
+          <!-- ETF 16% -->
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#AAA" stroke-width="10"
+            stroke-dasharray="32 170" stroke-dashoffset="-172" />
+          <!-- 펀드·채권 14% -->
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#CCC" stroke-width="10"
+            stroke-dasharray="30 172" stroke-dashoffset="-204" />
+          <circle cx="40" cy="40" r="22" fill="white" />
+        </svg>
+        <div class="center-label">12종목</div>
+      </div>
+
+      <div class="portfolio-badges">
+        <div class="p-badge">
+          <div class="left"><span class="dot" style="background:#2A2A2A"></span> 주식</div>
+          <span class="status ok">32%</span>
+        </div>
+        <div class="p-badge" style="background:#EAEAEA; font-weight:700;">
+          <div class="left"><span class="dot" style="background:#555"></span> 가상자산</div>
+          <span class="status warn">22% ⚠️</span>
+        </div>
+        <div class="p-badge">
+          <div class="left"><span class="dot" style="background:#888"></span> 금</div>
+          <span class="status ok">16%</span>
+        </div>
+        <div class="p-badge">
+          <div class="left"><span class="dot" style="background:#AAA"></span> ETF</div>
+          <span class="status ok">16%</span>
+        </div>
+        <div class="p-badge">
+          <div class="left"><span class="dot" style="background:#CCC"></span> 펀드·채권</div>
+          <span class="status ok">14%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Banner -->
+    <div class="action-banner">
+      <div class="icon-circle" style="color: #fff; font-size: 14px;">📊</div>
+      <div class="info">
+        <div class="title">리밸런싱 제안 보기</div>
+        <div class="desc">가상자산 비중↓ + 채권 ETF 편입 시 변동성 -18% 절감</div>
+      </div>
+      <span class="chevron">›</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- 4. 최근 투자 기록 (간결) -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-top">
+      <span class="card-title" style="margin-bottom:0">최근 투자 기록</span>
+      <span class="card-more">전체 일지 ›</span>
+    </div>
+
+    <div class="journal-item">
+      <div class="j-dot buy"></div>
+      <div class="j-body">
+        <div class="j-title">삼성전자 10주 매수</div>
+        <div class="j-detail">미래에셋 · 68,200원 × 10 = 682,000원</div>
+        <div class="j-date">오늘 09:32</div>
+      </div>
+    </div>
+
+    <div class="journal-item">
+      <div class="j-dot buy"></div>
+      <div class="j-body">
+        <div class="j-title">BTC 0.015개 매수</div>
+        <div class="j-detail">업비트 · 128,450,000원 × 0.015 = 1,926,750원</div>
+        <div class="j-date">4월 5일</div>
+      </div>
+    </div>
+
+    <div class="journal-item">
+      <div class="j-dot dividend"></div>
+      <div class="j-body">
+        <div class="j-title">TIGER 미국S&P500 배당금 입금</div>
+        <div class="j-detail">한국투자 · 12,450원 (세후)</div>
+        <div class="j-date">4월 4일</div>
+      </div>
+    </div>
+
+    <div class="journal-item">
+      <div class="j-dot market"></div>
+      <div class="j-body">
+        <div class="j-title">3월 월간 성적표</div>
+        <div class="j-detail">주식 +4.1% · 가상자산 -2.3% · 금 +8.5% · 종합 +3.2%</div>
+        <div class="j-date">4월 1일</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- 5. 이번 주 일정 (배당·공모주) -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-top">
+      <span class="card-title" style="margin-bottom:0">이번 주 투자 일정</span>
+      <span class="card-more">캘린더 ›</span>
+    </div>
+
+    <div class="schedule-item">
+      <div class="s-date-box">
+        <div class="day">08</div>
+        <div class="month">4월</div>
+      </div>
+      <div class="s-body">
+        <div class="s-title">ETH 머지 업데이트 예정</div>
+        <div class="s-detail">보유 ETH 0.8개 · 네트워크 변동성 주의</div>
+        <span class="s-tag">가상자산</span>
+      </div>
+    </div>
+
+    <div class="schedule-item">
+      <div class="s-date-box">
+        <div class="day">09</div>
+        <div class="month">4월</div>
+      </div>
+      <div class="s-body">
+        <div class="s-title">삼성전자 배당락일</div>
+        <div class="s-detail">예상 배당금 361원/주 · 보유 40주 기준 14,440원</div>
+        <span class="s-tag">배당</span>
+      </div>
+    </div>
+
+    <div class="schedule-item">
+      <div class="s-date-box">
+        <div class="day">10</div>
+        <div class="month">4월</div>
+      </div>
+      <div class="s-body">
+        <div class="s-title">△△바이오 공모주 청약</div>
+        <div class="s-detail">미래에셋 계좌에서 신청 가능</div>
+        <span class="s-tag">공모주</span>
+      </div>
+    </div>
+
+    <div class="schedule-item">
+      <div class="s-date-box">
+        <div class="day">11</div>
+        <div class="month">4월</div>
+      </div>
+      <div class="s-body">
+        <div class="s-title">KRX 금시장 정기 결제일</div>
+        <div class="s-detail">KODEX 골드선물 ETF 분배금 확인</div>
+        <span class="s-tag">금</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- 6. 또래 비교 (인라인) -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-top">
+      <span class="card-title" style="margin-bottom:0">또래 투자자와 비교</span>
+      <span class="card-more">자세히 ›</span>
+    </div>
+
+    <div class="peer-inline">
+      <div class="peer-rank">🏅 28%</div>
+      <div class="peer-info">
+        <div class="peer-label">30대 · 공격투자형 그룹 내 <strong>상위 28%</strong></div>
+        <div class="peer-detail">그룹 평균 +5.2% vs 내 +8.7% · 주식+가상자산+금 통합 기준</div>
+      </div>
+    </div>
+
+    <!-- Mini bar -->
+    <div style="margin-top: 14px; padding: 0 4px;">
+      <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); margin-bottom: 3px;">
+        <span>하위 10%</span><span>평균</span><span>상위 10%</span>
+      </div>
+      <div style="height: 6px; background: #E5E5E5; border-radius: 3px; position: relative;">
+        <div style="position: absolute; left: 20%; right: 20%; height: 100%; background: #CCC; border-radius: 3px;"></div>
+        <div style="position: absolute; left: 72%; top: -3px; width: 12px; height: 12px; background: var(--text-primary); border-radius: 50%; border: 2px solid #fff;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 20px;"></div>
+</div>
+
+</div><!-- /phone-frame -->
+
+</body>
+</html>

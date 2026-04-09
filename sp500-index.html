@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>S&P 500 — 네이버증권 (Clone)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    background: #F5F5F5;
+    color: #1E1E23;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    letter-spacing: -0.3px;
+  }
+  .phone-frame {
+    width: 393px;
+    min-height: 100vh;
+    background: #fff;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── Status Bar ── */
+  .status-bar {
+    height: 44px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 20px;
+    font-size: 12px; font-weight: 600;
+    background: #fff;
+  }
+  .status-bar .time { font-weight: 700; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .status-bar .icons svg { width: 16px; height: 16px; fill: #1E1E23; }
+
+  /* ── Naver Header ── */
+  .naver-header {
+    display: flex; align-items: center;
+    height: 48px; padding: 0 16px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .naver-header .logo {
+    display: flex; align-items: center; gap: 2px;
+    font-size: 15px; font-weight: 800; letter-spacing: -0.8px;
+  }
+  .naver-header .logo .n { color: #03C75A; }
+  .naver-header .logo .service {
+    font-size: 14px; font-weight: 700; color: #1E1E23;
+    margin-left: 6px; letter-spacing: -0.3px;
+  }
+  .naver-header .spacer { flex: 1; }
+  .naver-header .actions { display: flex; gap: 14px; align-items: center; }
+  .naver-header .actions svg { width: 22px; height: 22px; fill: #333; }
+
+  /* ── Tab Bar ── */
+  .tab-bar {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    padding: 0 4px;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-bar .tab {
+    flex-shrink: 0;
+    padding: 10px 12px;
+    font-size: 13px; font-weight: 500;
+    color: #999;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .tab-bar .tab.active {
+    color: #1E1E23;
+    font-weight: 700;
+    border-bottom-color: #1E1E23;
+  }
+
+  /* ── Index Header ── */
+  .index-header {
+    padding: 20px 16px 12px;
+    background: #fff;
+  }
+  .index-header .exchange {
+    font-size: 11px; color: #999; font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .index-header .name {
+    font-size: 20px; font-weight: 800; letter-spacing: -0.8px;
+    margin-bottom: 6px;
+  }
+  .index-header .price-row {
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .index-header .price {
+    font-size: 28px; font-weight: 800; letter-spacing: -1px;
+  }
+  .index-header .change {
+    font-size: 14px; font-weight: 600; color: #E04040;
+  }
+  .index-header .change.up { color: #E04040; }
+  .index-header .change.down { color: #2B7CE9; }
+  .index-header .timestamp {
+    font-size: 11px; color: #999; margin-top: 4px;
+  }
+
+  /* ── Sub Tabs (종합/토론) ── */
+  .sub-tabs {
+    display: flex;
+    background: #fff;
+    padding: 0 16px;
+    gap: 0;
+  }
+  .sub-tabs .stab {
+    padding: 10px 16px;
+    font-size: 14px; font-weight: 500;
+    color: #999;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .sub-tabs .stab.active {
+    color: #1E1E23;
+    font-weight: 700;
+    border-bottom-color: #1E1E23;
+  }
+
+  /* ── Market Info Grid ── */
+  .market-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 16px;
+    gap: 0;
+    background: #fff;
+    border-bottom: 8px solid #F5F5F5;
+  }
+  .market-info .cell {
+    display: flex; justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .market-info .cell:nth-child(odd) { padding-right: 12px; border-right: 1px solid #f5f5f5; }
+  .market-info .cell:nth-child(even) { padding-left: 12px; }
+  .market-info .cell .label { color: #999; }
+  .market-info .cell .val { font-weight: 600; }
+  .market-info .cell .val.up { color: #E04040; }
+  .market-info .cell .val.down { color: #2B7CE9; }
+
+  /* ── Index Description ── */
+  .index-desc {
+    padding: 16px;
+    font-size: 12px;
+    color: #666;
+    line-height: 1.6;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* ── Chart Period ── */
+  .chart-section {
+    background: #fff;
+    padding: 0 16px 16px;
+  }
+  .chart-types {
+    display: flex; gap: 0; padding: 12px 0 8px;
+  }
+  .chart-types .ct {
+    padding: 5px 10px;
+    font-size: 12px; font-weight: 500;
+    color: #999;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .chart-types .ct.active {
+    color: #1E1E23; font-weight: 700;
+    background: #f0f0f0;
+  }
+  .chart-periods {
+    display: flex; gap: 0; padding-bottom: 8px;
+  }
+  .chart-periods .cp {
+    padding: 5px 10px;
+    font-size: 12px; font-weight: 500;
+    color: #999;
+    cursor: pointer;
+  }
+  .chart-periods .cp.active {
+    color: #1E1E23; font-weight: 700;
+  }
+  .chart-canvas-wrap {
+    position: relative;
+    height: 200px;
+    margin-bottom: 8px;
+  }
+  .chart-canvas-wrap canvas {
+    width: 100%; height: 100%;
+  }
+  .chart-actions {
+    display: flex; gap: 8px;
+  }
+  .chart-actions .btn {
+    flex: 1; padding: 10px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px; font-weight: 600;
+    color: #333;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  /* ── MyData Banner ── */
+  .mydata-banner {
+    margin: 0 16px 16px;
+    padding: 16px;
+    background: #F5F5F5;
+    border-radius: 10px;
+  }
+  .mydata-banner .hook {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .mydata-banner .sub {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .mydata-banner .cta {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #1E1E23;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  /* ── MyData Toggle ── */
+  .mydata-toggle {
+    margin: 0 16px 16px;
+    padding: 12px 16px;
+    background: #F5F5F5;
+    border-radius: 10px;
+  }
+  .toggle-label {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; font-size: 13px; font-weight: 600;
+  }
+  .toggle-label input { display: none; }
+  .toggle-switch {
+    width: 40px; height: 22px;
+    background: #ccc; border-radius: 11px;
+    position: relative; transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle-switch::after {
+    content: '';
+    width: 18px; height: 18px;
+    background: #fff; border-radius: 50%;
+    position: absolute; top: 2px; left: 2px;
+    transition: transform 0.2s;
+  }
+  .toggle-label input:checked + .toggle-switch {
+    background: #1E1E23;
+  }
+  .toggle-label input:checked + .toggle-switch::after {
+    transform: translateX(18px);
+  }
+  .toggle-text { color: #333; }
+
+  /* ── Chart Legend (연결 후) ── */
+  .chart-overlay-legend {
+    display: none;
+    gap: 14px; margin-top: 8px; padding: 0 4px;
+  }
+  .chart-overlay-legend.show { display: flex; }
+  .chart-overlay-legend .leg-item {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 11px; color: #666;
+  }
+  .chart-overlay-legend .leg-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+
+  /* ── Constituents Table ── */
+  .section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 16px 10px;
+    background: #fff;
+  }
+  .section-header h3 {
+    font-size: 15px; font-weight: 700;
+  }
+  .section-header .more {
+    font-size: 12px; color: #999; cursor: pointer;
+  }
+  .stock-table {
+    background: #fff;
+    padding: 0 16px;
+  }
+  .stock-row {
+    display: flex; align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .stock-row:last-child { border-bottom: none; }
+  .stock-row .info { flex: 1; }
+  .stock-row .ticker { font-size: 13px; font-weight: 700; }
+  .stock-row .name { font-size: 11px; color: #999; margin-top: 1px; }
+  .stock-row .price-col { text-align: right; min-width: 80px; }
+  .stock-row .sprice { font-size: 13px; font-weight: 600; }
+  .stock-row .after { font-size: 10px; color: #999; }
+  .stock-row .chg { text-align: right; min-width: 56px; font-size: 12px; font-weight: 600; }
+  .stock-row .chg.up { color: #E04040; }
+  .stock-row .chg.down { color: #2B7CE9; }
+
+  /* ── Daily Price Table ── */
+  .daily-table {
+    background: #fff;
+    padding: 0 16px 16px;
+    border-bottom: 8px solid #F5F5F5;
+  }
+  .daily-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 1fr 48px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 12px;
+    align-items: center;
+  }
+  .daily-row.head { font-weight: 600; color: #999; font-size: 11px; }
+  .daily-row .date { color: #999; }
+  .daily-row .dprice { text-align: right; font-weight: 600; }
+  .daily-row .dchg { text-align: right; }
+  .daily-row .dchg.up { color: #E04040; }
+  .daily-row .dchg.down { color: #2B7CE9; }
+  .daily-row .dpct { text-align: right; font-weight: 500; }
+  .daily-row .dpct.up { color: #E04040; }
+  .daily-row .dpct.down { color: #2B7CE9; }
+
+  .more-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px; font-weight: 600;
+    color: #666;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 20px 16px;
+    font-size: 10px;
+    color: #bbb;
+    line-height: 1.6;
+    background: #fff;
+  }
+
+  /* ── Floating State Toggle ── */
+  .floating-state-toggle {
+    position: fixed;
+    top: 12px; left: 50%; transform: translateX(-50%);
+    z-index: 9999;
+    display: flex; align-items: center; gap: 0;
+    background: #1E1E23;
+    border-radius: 20px;
+    padding: 3px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+  .floating-state-toggle .state-btn {
+    padding: 6px 14px;
+    font-size: 11px; font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    border: none; background: transparent;
+    border-radius: 17px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .floating-state-toggle .state-btn.active {
+    background: #fff;
+    color: #1E1E23;
+  }
+
+  /* ── MyData Toggle with nav link ── */
+  .mydata-toggle-row {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .mydata-toggle-row .toggle-label { flex: 1; }
+  .mydata-toggle-row .nav-link {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 11px; font-weight: 700;
+    color: #fff;
+    background: #1E1E23;
+    border: none; border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ Floating State Toggle (프로토타입용) ═══ -->
+<div class="floating-state-toggle" id="floatingToggle">
+  <button class="state-btn active" onclick="setConnState(false)">연결 전</button>
+  <button class="state-btn" onclick="setConnState(true)">연결 후</button>
+</div>
+
+<div class="phone-frame">
+
+<!-- Status Bar -->
+<div class="status-bar">
+  <span class="time">9:41</span>
+  <div class="icons">
+    <svg viewBox="0 0 17 12"><path d="M1 8h2v4H1zM5 5.5h2V12H5zM9 3h2v9H9zM13 .5h2V12h-2z"/></svg>
+    <svg viewBox="0 0 16 12"><path d="M8 3.6a8.4 8.4 0 015.6 2.1l-1.2 1.2A6.5 6.5 0 008 5.4a6.5 6.5 0 00-4.4 1.5L2.4 5.7A8.4 8.4 0 018 3.6zm0 3.6a5 5 0 013.4 1.3l-1.2 1.2A3.1 3.1 0 008 9a3.1 3.1 0 00-2.2.7L4.6 8.5A5 5 0 018 7.2zm0 3.6a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/></svg>
+    <svg viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" fill="none" stroke-width="1.2"/><rect x="2" y="3" width="15" height="6" rx="1" fill="currentColor"/><path d="M23 5v3a2 2 0 000-3z" fill="currentColor" opacity="0.4"/></svg>
+  </div>
+</div>
+
+<!-- Naver Header -->
+<div class="naver-header">
+  <div class="logo">
+    <span class="n">N</span><span style="color:#1E1E23;">pay</span>
+    <span class="service">증권</span>
+  </div>
+  <div class="spacer"></div>
+  <div class="actions">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+  </div>
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <div class="tab">마켓</div>
+  <div class="tab">MY</div>
+  <div class="tab">국내</div>
+  <div class="tab active">해외</div>
+  <div class="tab">공모주</div>
+  <div class="tab">토론</div>
+  <div class="tab">지표</div>
+  <div class="tab">가상자산</div>
+</div>
+
+<!-- Index Header -->
+<div class="index-header">
+  <div class="exchange">SPX · 뉴욕 거래소</div>
+  <div class="name">S&P 500</div>
+  <div class="price-row">
+    <span class="price">6,616.85</span>
+    <span class="change up">▲ 5.02 (+0.08%)</span>
+  </div>
+  <div class="timestamp">미국 04.07. 16:44 장마감</div>
+</div>
+
+<!-- Sub Tabs -->
+<div class="sub-tabs">
+  <div class="stab active">종합</div>
+  <div class="stab">토론</div>
+</div>
+
+<!-- Market Info -->
+<div class="market-info">
+  <div class="cell"><span class="label">전일</span><span class="val">6,611.83</span></div>
+  <div class="cell"><span class="label">시가</span><span class="val">6,601.93</span></div>
+  <div class="cell"><span class="label">고가</span><span class="val up">6,618.26</span></div>
+  <div class="cell"><span class="label">저가</span><span class="val down">6,534.55</span></div>
+  <div class="cell"><span class="label">거래량</span><span class="val">2,731,119천주</span></div>
+  <div class="cell"><span class="label">대금</span><span class="val">-</span></div>
+  <div class="cell"><span class="label">52주 최고</span><span class="val up">7,002.28</span></div>
+  <div class="cell"><span class="label">52주 최저</span><span class="val down">4,835.04</span></div>
+</div>
+
+<!-- Index Description -->
+<div class="index-desc">
+  S&P 500 미국의 스탠더드 앤드 푸어사가 기업규모·유동성·산업대표성을 감안하여 선정한 보통주 500종목을 대상으로 작성해 발표하는 주가지수
+</div>
+
+<!-- Chart Section -->
+<div class="chart-section">
+  <div class="chart-types">
+    <div class="ct active">일봉</div>
+    <div class="ct">주봉</div>
+    <div class="ct">월봉</div>
+  </div>
+  <div class="chart-periods">
+    <div class="cp active">1일</div>
+    <div class="cp">3개월</div>
+    <div class="cp">1년</div>
+    <div class="cp">3년</div>
+    <div class="cp">10년</div>
+  </div>
+
+  <div class="chart-canvas-wrap">
+    <canvas id="spChart" width="690" height="400"></canvas>
+  </div>
+
+  <div class="chart-actions">
+    <div class="btn">차트 자세히 보기</div>
+    <div class="btn">구성종목</div>
+  </div>
+  <div class="chart-overlay-legend" id="overlayLegend">
+    <div class="leg-item"><span class="leg-dot" style="background:#E04040;"></span> S&P 500</div>
+    <div class="leg-item"><span class="leg-dot" style="background:#1E1E23;"></span> 내 수익률</div>
+  </div>
+</div>
+
+<!-- ═══ MyData Hook Banner (미연결 상태) ═══ -->
+<div class="mydata-banner" id="mydataBanner">
+  <div class="hook">S&P500이 +0.08% 오를 때,<br>내 주식은 얼마나 움직였을까?</div>
+  <button class="cta" onclick="location.href='investment-management.html#returns'">내 주식 수익률 비교하기</button>
+</div>
+
+<!-- ═══ MyData Toggle (연결 후 상태) ═══ -->
+<div class="mydata-toggle" id="mydataToggle" style="display:none;">
+  <div class="mydata-toggle-row">
+    <label class="toggle-label">
+      <input type="checkbox" id="overlayCheck">
+      <span class="toggle-switch"></span>
+      <span class="toggle-text">내 수익률 같이보기</span>
+    </label>
+    <a class="nav-link" href="investment-management.html#returns">분석 자세히보기 →</a>
+  </div>
+</div>
+
+<!-- Constituents -->
+<div style="border-top: 8px solid #F5F5F5;">
+  <div class="section-header">
+    <h3>구성종목</h3>
+    <span class="more">더보기 ›</span>
+  </div>
+  <div class="stock-table">
+    <div class="stock-row">
+      <div class="info"><div class="ticker">NVDA</div><div class="name">엔비디아</div></div>
+      <div class="price-col"><div class="sprice">178.10</div><div class="after">After 182.95</div></div>
+      <div class="chg up">+0.26%</div>
+    </div>
+    <div class="stock-row">
+      <div class="info"><div class="ticker">AAPL</div><div class="name">애플</div></div>
+      <div class="price-col"><div class="sprice">253.50</div><div class="after">After 258.40</div></div>
+      <div class="chg down">-2.07%</div>
+    </div>
+    <div class="stock-row">
+      <div class="info"><div class="ticker">MSFT</div><div class="name">마이크로소프트</div></div>
+      <div class="price-col"><div class="sprice">372.29</div><div class="after">After 381.78</div></div>
+      <div class="chg down">-0.16%</div>
+    </div>
+    <div class="stock-row">
+      <div class="info"><div class="ticker">AMZN</div><div class="name">아마존닷컴</div></div>
+      <div class="price-col"><div class="sprice">213.77</div><div class="after">After 219.88</div></div>
+      <div class="chg up">+0.46%</div>
+    </div>
+    <div class="stock-row">
+      <div class="info"><div class="ticker">GOOGL</div><div class="name">알파벳 Class A</div></div>
+      <div class="price-col"><div class="sprice">305.46</div><div class="after">After 314.18</div></div>
+      <div class="chg up">+1.82%</div>
+    </div>
+    <div class="stock-row">
+      <div class="info"><div class="ticker">AVGO</div><div class="name">브로드컴</div></div>
+      <div class="price-col"><div class="sprice">333.97</div><div class="after">After 345.10</div></div>
+      <div class="chg up">+6.21%</div>
+    </div>
+    <div class="stock-row">
+      <div class="info"><div class="ticker">META</div><div class="name">메타</div></div>
+      <div class="price-col"><div class="sprice">575.05</div><div class="after">After 599.01</div></div>
+      <div class="chg up">+0.35%</div>
+    </div>
+    <div class="stock-row">
+      <div class="info"><div class="ticker">TSLA</div><div class="name">테슬라</div></div>
+      <div class="price-col"><div class="sprice">346.65</div><div class="after">After 359.76</div></div>
+      <div class="chg down">-1.75%</div>
+    </div>
+  </div>
+  <div style="padding: 0 16px 16px;"><button class="more-btn">더보기</button></div>
+</div>
+
+<!-- Daily Price -->
+<div style="border-top: 8px solid #F5F5F5;">
+  <div class="section-header">
+    <h3>일별 시세</h3>
+  </div>
+  <div class="daily-table">
+    <div class="daily-row head">
+      <span>날짜</span><span class="dprice">종가</span><span class="dchg">전일비</span><span class="dpct">등락률</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">04.07</span><span class="dprice">6,616.85</span><span class="dchg up">+5.02</span><span class="dpct up">+0.08%</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">04.06</span><span class="dprice">6,611.83</span><span class="dchg up">+29.14</span><span class="dpct up">+0.44%</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">04.02</span><span class="dprice">6,582.69</span><span class="dchg up">+7.37</span><span class="dpct up">+0.11%</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">04.01</span><span class="dprice">6,575.32</span><span class="dchg up">+46.80</span><span class="dpct up">+0.72%</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">03.31</span><span class="dprice">6,528.52</span><span class="dchg up">+184.80</span><span class="dpct up">+2.91%</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">03.30</span><span class="dprice">6,343.72</span><span class="dchg down">-25.13</span><span class="dpct down">-0.39%</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">03.27</span><span class="dprice">6,368.85</span><span class="dchg down">-108.31</span><span class="dpct down">-1.67%</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">03.26</span><span class="dprice">6,477.16</span><span class="dchg down">-114.74</span><span class="dpct down">-1.74%</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">03.25</span><span class="dprice">6,591.90</span><span class="dchg up">+35.53</span><span class="dpct up">+0.54%</span>
+    </div>
+    <div class="daily-row">
+      <span class="date">03.24</span><span class="dprice">6,556.37</span><span class="dchg down">-24.63</span><span class="dpct down">-0.37%</span>
+    </div>
+  </div>
+  <div style="padding: 0 16px 16px;"><button class="more-btn">더보기</button></div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  네이버파이낸셜㈜가 제공하는 금융 정보는 콘텐츠 제공업체로부터 받는 정보로 투자 참고사항이며, 오류가 발생하거나 지연될 수 있습니다. 네이버파이낸셜㈜는 제공된 정보에 의한 투자결과에 법적책임을 지지 않습니다.
+</div>
+
+<div style="height: 20px;"></div>
+
+</div><!-- /phone-frame -->
+
+<script>
+// ── S&P 500 1-day chart (intraday 30min intervals) ──
+const canvas = document.getElementById('spChart');
+const ctx = canvas.getContext('2d');
+const dpr = window.devicePixelRatio || 2;
+canvas.width = canvas.offsetWidth * dpr;
+canvas.height = canvas.offsetHeight * dpr;
+ctx.scale(dpr, dpr);
+const W = canvas.offsetWidth, H = canvas.offsetHeight;
+const pad = { top: 16, right: 8, bottom: 24, left: 50 };
+
+// Intraday data points (realistic pattern for 04.07)
+const labels = ['09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00'];
+const prices = [6601.93, 6588.40, 6534.55, 6548.20, 6562.80, 6570.10, 6578.50, 6590.30, 6598.60, 6605.40, 6610.20, 6608.80, 6614.50, 6616.85];
+const prevClose = 6611.83;
+
+const minP = Math.min(...prices) - 10;
+const maxP = Math.max(...prices) + 10;
+const cw = W - pad.left - pad.right;
+const ch = H - pad.top - pad.bottom;
+const xStep = cw / (prices.length - 1);
+
+// Grid
+ctx.strokeStyle = '#f0f0f0'; ctx.lineWidth = 0.5;
+for (let i = 0; i <= 4; i++) {
+  const y = pad.top + (ch / 4) * i;
+  ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+  const val = maxP - ((maxP - minP) / 4) * i;
+  ctx.fillStyle = '#bbb'; ctx.font = '10px -apple-system, sans-serif'; ctx.textAlign = 'right';
+  ctx.fillText(val.toFixed(0), pad.left - 6, y + 3);
+}
+
+// Prev close dashed line
+const prevY = pad.top + ch * ((maxP - prevClose) / (maxP - minP));
+ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+ctx.beginPath(); ctx.moveTo(pad.left, prevY); ctx.lineTo(W - pad.right, prevY); ctx.stroke();
+ctx.setLineDash([]);
+ctx.fillStyle = '#999'; ctx.font = '9px -apple-system, sans-serif'; ctx.textAlign = 'left';
+ctx.fillText('전일 ' + prevClose.toFixed(2), W - pad.right - 70, prevY - 4);
+
+// X labels
+ctx.fillStyle = '#bbb'; ctx.font = '9px -apple-system, sans-serif'; ctx.textAlign = 'center';
+[0, 3, 7, 10, 13].forEach(i => {
+  ctx.fillText(labels[i], pad.left + i * xStep, H - 4);
+});
+
+// Line + fill
+const pts = prices.map((p, i) => ({
+  x: pad.left + i * xStep,
+  y: pad.top + ch * ((maxP - p) / (maxP - minP))
+}));
+
+// Fill gradient
+const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+grad.addColorStop(0, 'rgba(224, 64, 64, 0.08)');
+grad.addColorStop(1, 'rgba(224, 64, 64, 0)');
+ctx.fillStyle = grad;
+ctx.beginPath();
+ctx.moveTo(pts[0].x, prevY);
+pts.forEach(p => ctx.lineTo(p.x, p.y));
+ctx.lineTo(pts[pts.length-1].x, prevY);
+ctx.closePath(); ctx.fill();
+
+// Line
+ctx.strokeStyle = '#E04040'; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+ctx.beginPath();
+pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+ctx.stroke();
+
+// End dot
+const last = pts[pts.length - 1];
+ctx.beginPath(); ctx.arc(last.x, last.y, 3, 0, Math.PI * 2);
+ctx.fillStyle = '#E04040'; ctx.fill();
+
+// Period/type tab interaction
+document.querySelectorAll('.chart-types .ct').forEach(el => {
+  el.addEventListener('click', function() {
+    document.querySelectorAll('.chart-types .ct').forEach(e => e.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+document.querySelectorAll('.chart-periods .cp').forEach(el => {
+  el.addEventListener('click', function() {
+    document.querySelectorAll('.chart-periods .cp').forEach(e => e.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ── MyData connection state ──
+function setConnState(connected) {
+  const banner = document.getElementById('mydataBanner');
+  const toggle = document.getElementById('mydataToggle');
+  const btns = document.querySelectorAll('.floating-state-toggle .state-btn');
+  const checkbox = document.getElementById('overlayCheck');
+  const legend = document.getElementById('overlayLegend');
+
+  if (connected) {
+    banner.style.display = 'none';
+    toggle.style.display = 'block';
+    btns[0].classList.remove('active');
+    btns[1].classList.add('active');
+  } else {
+    banner.style.display = '';
+    toggle.style.display = 'none';
+    btns[0].classList.add('active');
+    btns[1].classList.remove('active');
+    // Reset overlay
+    if (checkbox.checked) {
+      checkbox.checked = false;
+      legend.classList.remove('show');
+      ctx.clearRect(0, 0, W, H);
+      redrawBase();
+    }
+  }
+}
+
+// Init from URL param
+if (location.search.includes('connected=1')) setConnState(true);
+
+// ── My returns overlay data (% change, same intervals as S&P) ──
+const myReturns = [0, -0.10, -0.25, -0.18, 0.05, 0.12, 0.20, 0.28, 0.35, 0.42, 0.38, 0.30, 0.36, 0.38];
+
+// Convert S&P prices to % change for overlay comparison
+const spReturns = prices.map(p => ((p - prevClose) / prevClose) * 100);
+
+function drawOverlay(show) {
+  // Save base chart as image, redraw
+  const img = new Image();
+  img.src = canvas.toDataURL();
+  img.onload = function() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(img, 0, 0, W, H);
+
+    if (!show) return;
+
+    // Scale: use % returns for both lines on a secondary Y axis
+    const allRet = [...spReturns, ...myReturns];
+    const minR = Math.min(...allRet) - 0.1;
+    const maxR = Math.max(...allRet) + 0.1;
+
+    const myPts = myReturns.map((r, i) => ({
+      x: pad.left + i * xStep,
+      y: pad.top + ch * ((maxR - r) / (maxR - minR))
+    }));
+
+    // My returns line
+    ctx.strokeStyle = '#1E1E23'; ctx.lineWidth = 2; ctx.setLineDash([]);
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    myPts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+
+    // End dot for my returns
+    const myLast = myPts[myPts.length - 1];
+    ctx.beginPath(); ctx.arc(myLast.x, myLast.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#1E1E23'; ctx.fill();
+
+    // End label
+    ctx.fillStyle = '#1E1E23'; ctx.font = 'bold 10px -apple-system, sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText('+0.38%', myLast.x + 6, myLast.y + 3);
+  };
+}
+
+// Save base chart image on load
+let baseChartImage = null;
+setTimeout(() => {
+  baseChartImage = canvas.toDataURL();
+}, 100);
+
+function redrawBase() {
+  if (!baseChartImage) return;
+  const img = new Image();
+  img.src = baseChartImage;
+  img.onload = () => ctx.drawImage(img, 0, 0, W, H);
+}
+
+// Toggle handler
+document.getElementById('overlayCheck').addEventListener('change', function() {
+  const legend = document.getElementById('overlayLegend');
+  if (this.checked) {
+    legend.classList.add('show');
+    drawOverlay(true);
+  } else {
+    legend.classList.remove('show');
+    // Redraw without overlay
+    ctx.clearRect(0, 0, W, H);
+    redrawBase();
+  }
+});
+</script>
+</body>
+</html>
